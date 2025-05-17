@@ -1,0 +1,64 @@
+#!/bin/bash
+
+case "$1" in
+  update)
+    echo "[+] Mise à jour des paquets..."
+    sudo apt update
+
+    echo
+    echo "[?] Voulez-vous mettre à niveau les paquets disponibles ? (y/n)"
+    read -r upgrade_confirm
+    if [[ "$upgrade_confirm" == "y" || "$upgrade_confirm" == "Y" ]]; then
+      echo "[+] Mise à niveau des paquets..."
+      sudo apt upgrade
+    else
+      echo "[-] Mise à niveau annulée."
+    fi
+    ;;
+
+  search)
+    if [ -z "$2" ]; then
+      echo "Usage: fastapt search <mot-clé>"
+    else
+      echo "[+] Recherche de paquets contenant '$2'..."
+      sudo apt list --installed | grep "$2"
+    fi
+    ;;
+
+  remove)
+    if [ -z "$2" ]; then
+      echo "Usage: fastapt remove <nom-paquet>"
+    else
+      echo "[?] Voulez-vous aussi supprimer les fichiers de configuration ? (purge) (y/n)"
+      read -r purge_confirm
+      if [[ "$purge_confirm" == "y" || "$purge_confirm" == "Y" ]]; then
+        echo "[+] Suppression complète de '$2' avec purge..."
+        sudo apt purge "$2"
+      else
+        echo "[+] Suppression de '$2'..."
+        sudo apt remove "$2"
+      fi
+    fi
+    ;;
+
+  edit)
+    echo "[+] Édition des sources APT..."
+    sudo apt edit-sources
+    ;;
+
+  help|--help|-h)
+    echo "version 1.0.0"
+    echo "Usage: fastapt <commande> [options]"
+    echo "Commandes disponibles :"
+    echo "  update              - Met à jour les paquets et propose une mise à niveau"
+    echo "  search <mot-clé>    - Recherche dans les paquets installés"
+    echo "  remove <pkg>        - Supprime un paquet, option purge demandée"
+    echo "  edit                - Édite les sources APT"
+    echo "  help                - Affiche cette aide"
+    ;;
+
+  *)
+    echo "Commande inconnue: '$1'"
+    echo "Utilise 'fastapt help' pour voir les commandes disponibles."
+    ;;
+esac
