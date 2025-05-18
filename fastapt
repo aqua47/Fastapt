@@ -4,6 +4,7 @@ case "$1" in
   update)
     echo "[+] Mise à jour des paquets..."
     sudo apt update
+    apt list --upgradable
 
     echo
     echo "[?] Voulez-vous mettre à niveau les paquets disponibles ? (y/n)"
@@ -47,7 +48,7 @@ case "$1" in
     ;;
 
   help|--help|-h)
-    echo "version 1.0.0"
+    echo "version 1.0.1"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
     echo "  update              - Met à jour les paquets et propose une mise à niveau"
