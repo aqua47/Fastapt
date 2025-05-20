@@ -1,23 +1,34 @@
 #!/bin/bash
 
 case "$1" in
-  update)
+  update|u)
     echo "[+] Mise à jour des paquets..."
     sudo apt update
-    apt list --upgradable
+    upgradable=$(apt list --upgradable | grep -v "Listing..." | wc -l)
 
-    echo
-    echo "[?] Voulez-vous mettre à niveau les paquets disponibles ? (y/n)"
-    read -r upgrade_confirm
-    if [[ "$upgrade_confirm" == "y" || "$upgrade_confirm" == "Y" ]]; then
-      echo "[+] Mise à niveau des paquets..."
-      sudo apt upgrade
+    if [ "$upgradable" -eq 1 ]; then
+      echo "[-] Tous les paquets sont à jour."
     else
-      echo "[-] Mise à niveau annulée."
+      echo "appuyer sur q pour quitter la liste des paquets"
+      echo
+      apt list --upgradable
+      echo
+      echo "[?] Voulez-vous mettre à niveau les paquets disponibles ? (y/n)"
+      read -r upgrade_confirm
+      if [[ "$upgrade_confirm" == "y" || "$upgrade_confirm" == "Y" ]]; then
+        echo "[+] Mise à niveau des paquets..."
+        if [ "$2" ==  "-y" ]; then
+          sudo apt upgrade -y
+        else
+          sudo apt upgrade
+        fi
+      else
+        echo "[-] Mise à niveau annulée."
+      fi
     fi
     ;;
 
-  search)
+  search|s)
     if [ -z "$2" ]; then
       echo "Usage: fastapt search <mot-clé>"
     else
@@ -26,7 +37,7 @@ case "$1" in
     fi
     ;;
 
-  remove)
+  remove|r)
     if [ -z "$2" ]; then
       echo "Usage: fastapt remove <nom-paquet>"
     else
@@ -34,21 +45,29 @@ case "$1" in
       read -r purge_confirm
       if [[ "$purge_confirm" == "y" || "$purge_confirm" == "Y" ]]; then
         echo "[+] Suppression complète de '$2' avec purge..."
-        sudo apt purge "$2"
+        if [ "$3" ==  "-y" ]; then
+          sudo apt purge "$2" -y
+        else
+          sudo apt purge "$2"
+        fi
       else
         echo "[+] Suppression de '$2'..."
-        sudo apt remove "$2"
+        if [ "$3" ==  "-y" ]; then
+          sudo apt remove "$2" -y
+        else
+          sudo apt remove "$2"
+        fi
       fi
     fi
     ;;
 
-  edit)
+  edit|e)
     echo "[+] Édition des sources APT..."
     sudo apt edit-sources
     ;;
 
-  help|--help|-h)
-    echo "version 1.0.1"
+  help|h)
+    echo "version 1.0.2"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
     echo "  update              - Met à jour les paquets et propose une mise à niveau"
