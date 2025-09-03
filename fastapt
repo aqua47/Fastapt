@@ -63,11 +63,11 @@ case "$1" in
 
   edit|e)
     echo "[+] Édition des sources APT..."
-    sudo apt edit-sources
+    sudo nano /etc/apt/sources.list.d/debian.sources
     ;;
 
   help|h)
-    echo "version 1.0.2"
+    echo "version 1.0.3"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
     echo "  update              - Met à jour les paquets et propose une mise à niveau"
