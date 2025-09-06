@@ -63,18 +63,30 @@ case "$1" in
 
   edit|e)
     echo "[+] Édition des sources APT..."
-    sudo nano /etc/apt/sources.list.d/debian.sources
+
+    echo "[+] Choisir le fichier à modifier"
+
+    ls /etc/apt/sources.list.d/
+
+    read -r fichier
+
+    sudo nano /etc/apt/sources.list.d/$fichier
     ;;
 
   help|h)
-    echo "version 1.0.3"
+    echo "version 1.1.0"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
-    echo "  update              - Met à jour les paquets et propose une mise à niveau"
-    echo "  search <mot-clé>    - Recherche dans les paquets installés"
-    echo "  remove <pkg>        - Supprime un paquet, option purge demandée"
-    echo "  edit                - Édite les sources APT"
-    echo "  help                - Affiche cette aide"
+    echo "  u | update              - Met à jour les paquets et propose une mise à niveau"
+    echo "  s | search <mot-clé>    - Recherche dans les paquets installés"
+    echo "  r | remove <pkg>        - Supprime un paquet, option purge proposée"
+    echo "  e | edit                - Édite les sources APT"
+    echo "  h | help                - Affiche cette aide"
+    echo " su | self-update         - Met à jour ce script"
+    ;;
+
+  self-update|su)
+    sudo curl -L "https://raw.githubusercontent.com/aqua47/Fastapt/refs/heads/main/fastapt" -o /usr/local/bin/fastapt && sudo chmod +x /usr/local/bin/fastapt
     ;;
 
   *)
