@@ -1,5 +1,17 @@
 #!/bin/bash
 
+edition_de_source() {
+    local supprimer="$1"
+
+    if [ "$supprimer" ==  "-r" ]; then
+      fichier=$(ls /etc/apt/sources.list.d/ | fzf --prompt="Choisis un fichier à supprimer: ")
+      sudo rm /etc/apt/sources.list.d/$fichier
+    else
+      fichier=$(ls /etc/apt/sources.list.d/ | fzf --prompt="Choisis un fichier à éditer: ")
+      sudo nano /etc/apt/sources.list.d/$fichier
+    fi
+}
+
 case "$1" in
   update|u)
     echo "[+] Mise à jour des paquets..."
@@ -62,19 +74,25 @@ case "$1" in
     ;;
 
   edit|e)
-    echo "[+] Édition des sources APT..."
 
-    echo "[+] Choisir le fichier à modifier"
-
-    ls /etc/apt/sources.list.d/
-
-    read -r fichier
-
-    sudo nano /etc/apt/sources.list.d/$fichier
+    if command -v fzf >/dev/null 2>&1; then
+        edition_de_source "$2"
+    else
+        echo "fzf n'est pas installé ❌"
+        echo
+        echo "[?] Voulez-vous installé fzf ? (y/n)"
+        read -r install_fzf_confirm
+        if [[ "$install_fzf_confirm" == "y" || "$install_fzf_confirm" == "Y" ]]; then
+            sudo apt install fzf
+            edition_de_source "$2"
+        else
+            echo "[-] Installation de fzf annulée."
+        fi
+    fi
     ;;
 
   help|h)
-    echo "version 1.1.0"
+    echo "version 1.1.1"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
     echo "  u | update              - Met à jour les paquets et propose une mise à niveau"
