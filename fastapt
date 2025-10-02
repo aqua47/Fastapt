@@ -5,10 +5,18 @@ edition_de_source() {
 
     if [ "$supprimer" ==  "-r" ]; then
       fichier=$(ls /etc/apt/sources.list.d/ | fzf --prompt="Choisis un fichier à supprimer: ")
-      sudo rm /etc/apt/sources.list.d/$fichier
+      if [ -n "$fichier" ]; then
+        sudo rm /etc/apt/sources.list.d/$fichier
+      else
+        echo "Aucun fichier sélectionné"
+      fi
     else
       fichier=$(ls /etc/apt/sources.list.d/ | fzf --prompt="Choisis un fichier à éditer: ")
-      sudo nano /etc/apt/sources.list.d/$fichier
+      if [ -n "$fichier" ]; then
+        sudo nano /etc/apt/sources.list.d/$fichier
+      else
+        echo "Aucun fichier sélectionné"
+      fi
     fi
 }
 
@@ -42,7 +50,7 @@ case "$1" in
 
   search|s)
     if [ -z "$2" ]; then
-      echo "Usage: fastapt search <mot-clé>"
+      apt list | fzf
     else
       echo "[+] Recherche de paquets contenant '$2'..."
       sudo apt list --installed | grep "$2"
@@ -92,7 +100,7 @@ case "$1" in
     ;;
 
   help|h)
-    echo "version 1.1.1"
+    echo "version 1.1.2"
     echo "Usage: fastapt <commande> [options]"
     echo "Commandes disponibles :"
     echo "  u | update              - Met à jour les paquets et propose une mise à niveau"
