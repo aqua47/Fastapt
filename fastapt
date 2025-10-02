@@ -50,7 +50,20 @@ case "$1" in
 
   search|s)
     if [ -z "$2" ]; then
-      apt list | fzf
+      if command -v fzf >/dev/null 2>&1; then
+        apt list | fzf
+      else
+        echo "fzf n'est pas installé ❌"
+        echo
+        echo "[?] Voulez-vous installé fzf ? (y/n)"
+        read -r install_fzf_confirm
+        if [[ "$install_fzf_confirm" == "y" || "$install_fzf_confirm" == "Y" ]]; then
+            sudo apt install fzf
+            apt list | fzf
+        else
+            echo "[-] Installation de fzf annulée."
+        fi
+      fi
     else
       echo "[+] Recherche de paquets contenant '$2'..."
       sudo apt list --installed | grep "$2"
