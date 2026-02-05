@@ -1,7 +1,15 @@
 #!/bin/bash
 
+# --- CONFIGURATION START ---
+AUTO_CLEAN=false
+AUTO_AUTOREMOVE=false
+# --- CONFIGURATION END ---
+
+#change config
+#sudo sed -i "s/^AUTO_CLEAN=.*/AUTO_CLEAN=true/" "$0"
+
 help() {
-  echo "version 1.1.2"
+  echo "version 1.1.3"
   echo "Usage: fastapt <commande> [options]"
   echo "Commandes disponibles :"
   echo "  u | update              - Met à jour les paquets et propose une mise à niveau"
@@ -36,9 +44,9 @@ case "$1" in
   update|u)
     echo "[+] Mise à jour des paquets..."
     sudo apt update
-    upgradable=$(apt list --upgradable | grep -v "Listing..." | wc -l)
+    upgradable=$(apt list --upgradable 2>/dev/null | grep -c "/")
 
-    if [ "$upgradable" -eq 1 ]; then
+    if [ "$upgradable" -eq 0 ]; then
       echo "[-] Tous les paquets sont à jour."
     else
       echo "appuyer sur q pour quitter la liste des paquets"
@@ -53,6 +61,14 @@ case "$1" in
           sudo apt upgrade -y
         else
           sudo apt upgrade
+        fi
+        if [ "$AUTO_CLEAN" = true ]; then
+          sudo apt-get clean
+          echo "[+] apt-get clean"
+        fi
+        if [ "$AUTO_AUTOREMOVE" = true ]; then
+          sudo apt autoremove
+          echo "[+] apt autoremove"
         fi
       else
         echo "[-] Mise à niveau annulée."
