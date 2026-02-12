@@ -5,19 +5,17 @@ AUTO_CLEAN=false
 AUTO_AUTOREMOVE=false
 # --- CONFIGURATION END ---
 
-#change config
-#sudo sed -i "s/^AUTO_CLEAN=.*/AUTO_CLEAN=true/" "$0"
-
 help() {
-  echo "version 1.1.3"
+  echo "version 1.1.4"
   echo "Usage: fastapt <commande> [options]"
   echo "Commandes disponibles :"
-  echo "  u | update              - Met à jour les paquets et propose une mise à niveau"
-  echo "  s | search <mot-clé>    - Recherche dans les paquets installés"
-  echo "  r | remove <pkg>        - Supprime un paquet, option purge proposée"
-  echo "  e | edit                - Édite les sources APT"
-  echo "  h | help                - Affiche cette aide"
-  echo " su | self-update         - Met à jour ce script"
+  echo "  u | update                          - Met à jour les paquets et propose une mise à niveau"
+  echo "  s | search <mot-clé>                - Recherche dans les paquets installés"
+  echo "  r | remove <pkg>                    - Supprime un paquet, option purge proposée"
+  echo "  e | edit                            - Édite les sources APT"
+  echo "  h | help                            - Affiche cette aide"
+  echo " su | self-update                     - Met à jour ce script"
+  echo " se | self-edit <config> <true/false> - Édite les paramètres du script (AUTO_CLEAN et AUTO_AUTOREMOVE)"
 }
 
 edition_de_source() {
@@ -142,6 +140,21 @@ case "$1" in
 
   self-update|su)
     sudo curl -L "https://raw.githubusercontent.com/aqua47/Fastapt/refs/heads/main/fastapt" -o /usr/local/bin/fastapt && sudo chmod +x /usr/local/bin/fastapt
+    ;;
+
+  self-edit|se)
+    if [ -z "$2" ]; then
+      echo "Usage: fastapt self-edit <config> <true/false>"
+    else
+      config="$2"
+      bool="$3"
+
+      if [[ "$config" == "AUTO_CLEAN" || "$config" == "AUTO_AUTOREMOVE" ]]; then
+        sudo sed -i "s/^${config}=.*/${config}=${bool}/" "$0"
+      else
+        echo "Config inconnue: '$config' (AUTO_CLEAN et AUTO_AUTOREMOVE)"
+      fi
+    fi
     ;;
 
   help|h)
