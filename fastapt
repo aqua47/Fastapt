@@ -6,16 +6,16 @@ AUTO_AUTOREMOVE=false
 # --- CONFIGURATION END ---
 
 help() {
-  echo "version 1.1.4"
+  echo "version 1.1.5"
   echo "Usage: fastapt <commande> [options]"
   echo "Commandes disponibles :"
-  echo "  u | update                          - Met à jour les paquets et propose une mise à niveau"
-  echo "  s | search <mot-clé>                - Recherche dans les paquets installés"
-  echo "  r | remove <pkg>                    - Supprime un paquet, option purge proposée"
-  echo "  e | edit                            - Édite les sources APT"
-  echo "  h | help                            - Affiche cette aide"
-  echo " su | self-update                     - Met à jour ce script"
-  echo " se | self-edit <config> <true/false> - Édite les paramètres du script (AUTO_CLEAN et AUTO_AUTOREMOVE)"
+  echo "  u | update                            - Met à jour les paquets et propose une mise à niveau"
+  echo "  s | search <mot-clé>                  - Recherche dans les paquets installés"
+  echo "  r | remove <pkg>                      - Supprime un paquet, option purge proposée"
+  echo "  e | edit                              - Édite les sources APT"
+  echo "  h | help                              - Affiche cette aide"
+  echo " su | self-update                       - Met à jour ce script"
+  echo " sc | self-config <config> <true/false> - Édite les paramètres du script (AUTO_CLEAN et AUTO_AUTOREMOVE)"
 }
 
 edition_de_source() {
@@ -143,9 +143,9 @@ case "$1" in
     exit 0
     ;;
 
-  self-edit|se)
+  self-config|sc)
     if [ -z "$2" ]; then
-      echo "Usage: fastapt self-edit <config> <true/false>"
+      echo "Usage: fastapt self-config <config> <true/false>"
     else
       config="$2"
       bool="$3"
@@ -156,6 +156,8 @@ case "$1" in
         echo "Config inconnue: '$config' (AUTO_CLEAN et AUTO_AUTOREMOVE)"
       fi
     fi
+    echo ""
+    sudo sed -n '/# --- CONFIGURATION START ---/,/# --- CONFIGURATION END ---/p' "$0" | grep "=" | grep -v "sed"
     ;;
 
   help|h)
