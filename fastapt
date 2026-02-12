@@ -140,6 +140,7 @@ case "$1" in
 
   self-update|su)
     sudo curl -L "https://raw.githubusercontent.com/aqua47/Fastapt/refs/heads/main/fastapt" -o /usr/local/bin/fastapt && sudo chmod +x /usr/local/bin/fastapt
+    exit 0
     ;;
 
   self-edit|se)
